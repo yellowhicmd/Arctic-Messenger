@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import {
   Archive, Bell, Check, ChevronDown, CircleHelp, Image, LockKeyhole,
   MessageCircle, MoreHorizontal, Paperclip, Phone, Plus, Search, Send,
-  Settings, ShieldCheck, Smile, UserRound, Users, Video, X
+  Settings, ShieldCheck, Smile, Users, Video, X
 } from "lucide-react";
 
 type Chat = {
