@@ -21,6 +21,8 @@ import {
   Users,
   Video,
   X,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 type Chat = {
@@ -39,7 +41,7 @@ const initialChats: Chat[] = [
     id: "1",
     name: "Mira Rahman",
     initials: "MR",
-    color: "lavender",
+    color: "blue",
     message: "That sounds good to me.",
     time: "10:42",
     unread: 2,
@@ -48,7 +50,7 @@ const initialChats: Chat[] = [
     id: "2",
     name: "Weekend plans",
     initials: "WP",
-    color: "peach",
+    color: "cyan",
     message: "Sam: sent the photos",
     time: "09:18",
     group: true,
@@ -65,7 +67,7 @@ const initialChats: Chat[] = [
     id: "4",
     name: "Design circle",
     initials: "DC",
-    color: "blue",
+    color: "indigo",
     message: "Nadia: new mockups are up",
     time: "Yesterday",
     group: true,
@@ -98,6 +100,7 @@ export default function App() {
   const [displayName, setDisplayName] = useState("Alex Morgan");
   const [bio, setBio] = useState("Keeping in touch, privately.");
   const [saved, setSaved] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   const activeChat = chats.find((chat) => chat.id === activeId) ?? chats[0];
 
@@ -163,7 +166,7 @@ export default function App() {
   }
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell ${darkMode ? "dark-theme" : ""}`}>
       <aside
         className={`sidebar ${
           showMobileChat ? "mobile-hidden" : ""
@@ -171,7 +174,7 @@ export default function App() {
       >
         <header className="brand-row">
           <div className="brand-mark">
-            <MessageCircle size={21} strokeWidth={2.4} />
+            <MessageCircle size={22} strokeWidth={2.4} />
           </div>
 
           <div className="brand-copy">
@@ -182,6 +185,7 @@ export default function App() {
           <button
             className="icon-button subtle"
             aria-label="More options"
+            title="More options"
           >
             <MoreHorizontal size={20} />
           </button>
@@ -191,7 +195,7 @@ export default function App() {
           className="identity-card"
           onClick={() => setShowProfile(true)}
         >
-          <div className="avatar avatar-large avatar-lavender">
+          <div className="avatar avatar-large avatar-blue">
             AM
           </div>
 
@@ -211,13 +215,14 @@ export default function App() {
             className="primary-button"
             onClick={createDemoChat}
           >
-            <Plus size={17} />
+            <Plus size={18} />
             New message
           </button>
 
           <button
             className="icon-button"
             aria-label="Settings"
+            title="Settings"
           >
             <Settings size={19} />
           </button>
@@ -252,10 +257,7 @@ export default function App() {
           </button>
         </div>
 
-        <nav
-          className="chat-list"
-          aria-label="Conversations"
-        >
+        <nav className="chat-list" aria-label="Conversations">
           {visibleChats.map((chat) => (
             <button
               key={chat.id}
@@ -303,6 +305,7 @@ export default function App() {
           <button
             className="icon-button tiny"
             aria-label="Help"
+            title="Help"
           >
             <CircleHelp size={17} />
           </button>
@@ -380,7 +383,7 @@ export default function App() {
         </header>
 
         <div className="encryption-banner">
-          <ShieldCheck size={15} />
+          <ShieldCheck size={16} />
 
           <span>
             This is a UI prototype. Messages are not yet end-to-end
@@ -433,6 +436,7 @@ export default function App() {
             <button
               className="icon-button composer-tool"
               aria-label="Add attachment"
+              title="Add attachment"
             >
               <Paperclip size={20} />
             </button>
@@ -456,6 +460,7 @@ export default function App() {
             <button
               className="icon-button composer-tool"
               aria-label="Add emoji"
+              title="Add emoji"
             >
               <Smile size={20} />
             </button>
@@ -465,6 +470,7 @@ export default function App() {
               onClick={sendMessage}
               disabled={!message.trim()}
               aria-label="Send message"
+              title="Send message"
             >
               <Send size={18} />
             </button>
@@ -480,6 +486,15 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      <button
+        className="theme-toggle"
+        onClick={() => setDarkMode((current) => !current)}
+        aria-label={darkMode ? "Switch to light theme" : "Switch to dark theme"}
+        title={darkMode ? "Switch to light theme" : "Switch to dark theme"}
+      >
+        {darkMode ? <Sun size={19} /> : <Moon size={19} />}
+      </button>
 
       {showProfile && (
         <div
@@ -507,7 +522,7 @@ export default function App() {
             </header>
 
             <div className="profile-avatar-wrap">
-              <div className="avatar avatar-large avatar-lavender">
+              <div className="avatar avatar-large avatar-blue">
                 AM
               </div>
 
@@ -589,4 +604,4 @@ export default function App() {
       )}
     </main>
   );
-          }
+                      }
