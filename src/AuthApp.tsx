@@ -9,3 +9,4 @@ createRoot(document.getElementById("root")!).render(
     <AuthApp />
   </React.StrictMode>,
 );
+export default AuthApp;
