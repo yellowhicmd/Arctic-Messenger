@@ -1,7 +1,7 @@
 interface Env {
   DB: D1Database;
   MESSAGING_TOKEN_SECRET: string;
-  FRONTEND_ORIGIN?: string;
+  FRONTEND_ORIGIN?: https://arctic.wasmer.app;
 }
 
 const PASSWORD_ITERATIONS = 600_000;
