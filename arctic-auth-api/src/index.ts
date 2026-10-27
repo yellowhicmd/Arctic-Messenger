@@ -1,6 +1,6 @@
-
 interface Env {
   DB: D1Database;
+  MESSAGES_DB: D1Database;
 }
 
 const PASSWORD_ITERATIONS = 600_000;
