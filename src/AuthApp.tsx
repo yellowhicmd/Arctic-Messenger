@@ -67,8 +67,12 @@ export default function AuthApp() {
         );
       } else {
         const result = await request("login", { arcticId, password });
+        // Keep the signed-in identity available to the messenger UI.
+        // This is display information, not an encryption key or password.
+        window.localStorage.setItem("arctic.accountId", result.arcticId || arcticId);
+        window.localStorage.setItem("arctic.nickname", result.nickname || "Arctic user");
         setPassword("");
-        setMessage(`Welcome, ${result.nickname || "user"}! Login succeeded.`);
+        window.location.assign("/");
       }
     } catch (error) {
       setMessage(

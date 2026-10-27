@@ -36,73 +36,32 @@ type Chat = {
   group?: boolean;
 };
 
-const initialChats: Chat[] = [
-  {
-    id: "1",
-    name: "Mira Rahman",
-    initials: "MR",
-    color: "blue",
-    message: "That sounds good to me.",
-    time: "10:42",
-    unread: 2,
-  },
-  {
-    id: "2",
-    name: "Weekend plans",
-    initials: "WP",
-    color: "cyan",
-    message: "Sam: sent the photos",
-    time: "09:18",
-    group: true,
-  },
-  {
-    id: "3",
-    name: "Arman",
-    initials: "A",
-    color: "mint",
-    message: "Thanks! Talk later.",
-    time: "Yesterday",
-  },
-  {
-    id: "4",
-    name: "Design circle",
-    initials: "DC",
-    color: "indigo",
-    message: "Nadia: new mockups are up",
-    time: "Yesterday",
-    group: true,
-  },
-];
+const initialChats: Chat[] = [];
 
 export default function App() {
   const [chats, setChats] = useState(initialChats);
-  const [activeId, setActiveId] = useState("1");
+  const [activeId, setActiveId] = useState("");
   const [showMobileChat, setShowMobileChat] = useState(false);
 
   const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
 
-  const [messages, setMessages] = useState<Record<string, string[]>>({
-    "1": [
-      "Hey! How is your day going?",
-      "Pretty well, thanks. Just finishing a few things.",
-      "That sounds good to me.",
-    ],
-    "2": [
-      "Should we make a group for the weekend?",
-      "Sam: sent the photos",
-    ],
-    "3": ["Are we still on for tomorrow?", "Thanks! Talk later."],
-    "4": ["Welcome everyone 👋", "Nadia: new mockups are up"],
-  });
+  const [messages, setMessages] = useState<Record<string, string[]>>({});
 
   const [showProfile, setShowProfile] = useState(false);
-  const [displayName, setDisplayName] = useState("Alex Morgan");
-  const [bio, setBio] = useState("Keeping in touch, privately.");
+  const [displayName, setDisplayName] = useState(
+    () => window.localStorage.getItem("arctic.nickname") || "Your nickname",
+  );
+  const [accountId] = useState(
+    () => window.localStorage.getItem("arctic.accountId") || "Not available",
+  );
+  const [bio, setBio] = useState(
+    () => window.localStorage.getItem("arctic.bio") || "Keeping in touch, privately.",
+  );
   const [saved, setSaved] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
-  const activeChat = chats.find((chat) => chat.id === activeId) ?? chats[0];
+  const activeChat = chats.find((chat) => chat.id === activeId);
 
   const visibleChats = useMemo(
     () =>
@@ -139,20 +98,33 @@ export default function App() {
   }
 
   function createDemoChat() {
-    const id = String(Date.now());
-
+    const recipientId = window.prompt("Enter the recipient's 8-digit Arctic ID:");
+    if (!recipientId) return;
+    const cleanedId = recipientId.trim();
+    if (!/^[0-9]{8}$/.test(cleanedId)) {
+      window.alert("Please enter an 8-digit Arctic ID.");
+      return;
+    }
+    if (cleanedId === accountId) {
+      window.alert("You cannot start a conversation with your own account.");
+      return;
+    }
+    const existing = chats.find((chat) => chat.id === cleanedId);
+    if (existing) {
+      openChat(existing.id);
+      return;
+    }
     const newChat: Chat = {
-      id,
-      name: "New conversation",
-      initials: "NC",
+      id: cleanedId,
+      name: `Arctic user ${cleanedId}`,
+      initials: "AU",
       color: "blue",
-      message: "Start a conversation",
-      time: "Now",
+      message: "New conversation · not connected yet",
+      time: "New",
     };
-
     setChats((current) => [newChat, ...current]);
-    setMessages((current) => ({ ...current, [id]: [] }));
-    setActiveId(id);
+    setMessages((current) => ({ ...current, [cleanedId]: [] }));
+    setActiveId(cleanedId);
     setShowMobileChat(true);
   }
 
@@ -196,14 +168,14 @@ export default function App() {
           onClick={() => setShowProfile(true)}
         >
           <div className="avatar avatar-large avatar-blue">
-            AM
+            {displayName.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "A"}
           </div>
 
           <div className="identity-copy">
             <strong>{displayName}</strong>
             <span>
               <LockKeyhole size={12} />
-              ID · 847 291 635 204
+              ID · {accountId}
             </span>
           </div>
 
@@ -312,6 +284,7 @@ export default function App() {
         </footer>
       </aside>
 
+      {activeChat ? (
       <section
         className={`conversation ${
           showMobileChat ? "mobile-active" : ""
@@ -486,6 +459,25 @@ export default function App() {
           </div>
         </div>
       </section>
+      ) : (
+        <section className={`conversation ${showMobileChat ? "mobile-active" : ""}`}>
+          <div className="message-area" style={{ alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+            <div className="brand-mark" style={{ width: 58, height: 58, borderRadius: 20 }}>
+              <MessageCircle size={28} />
+            </div>
+            <h1 style={{ margin: "20px 0 8px", fontSize: 25 }}>Your conversations start here</h1>
+            <p style={{ maxWidth: 360, color: "var(--text-secondary)", lineHeight: 1.6, margin: 0 }}>
+              There are no conversations yet. Start a new conversation with someone's Arctic ID when you're ready.
+            </p>
+            <button className="primary-button" style={{ marginTop: 22 }} onClick={createDemoChat}>
+              <Plus size={18} /> New conversation
+            </button>
+            <p style={{ maxWidth: 380, color: "var(--text-secondary)", fontSize: 12, marginTop: 18 }}>
+              Messaging and end-to-end encryption are not connected yet. This screen is ready for the next implementation step.
+            </p>
+          </div>
+        </section>
+      )}
 
       <button
         className="theme-toggle"
@@ -523,7 +515,7 @@ export default function App() {
 
             <div className="profile-avatar-wrap">
               <div className="avatar avatar-large avatar-blue">
-                AM
+                {displayName.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "A"}
               </div>
 
               <button
@@ -554,8 +546,8 @@ export default function App() {
               Messenger ID
 
               <div className="readonly-field">
-                847 291 635 204
-                <span>Generated ID demo</span>
+                {accountId}
+                <span>Your Arctic account ID</span>
               </div>
             </label>
 
@@ -581,13 +573,20 @@ export default function App() {
               {saved && (
                 <span className="saved-state">
                   <Check size={15} />
-                  Saved locally for this session
+                  Nickname saved on this device
                 </span>
               )}
 
               <button
                 className="primary-button"
-                onClick={() => setSaved(true)}
+                onClick={() => {
+                const nickname = displayName.trim().slice(0, 32);
+                if (!nickname) return;
+                setDisplayName(nickname);
+                window.localStorage.setItem("arctic.nickname", nickname);
+                window.localStorage.setItem("arctic.bio", bio);
+                setSaved(true);
+              }}
               >
                 <Check size={16} />
                 Save profile
@@ -595,9 +594,7 @@ export default function App() {
             </div>
 
             <p className="modal-disclaimer">
-              Prototype only: profile changes are held in memory and
-              disappear on refresh. No account or network sync exists
-              yet.
+              Your nickname and bio are saved in this browser on this device. Account-wide nickname sync is not implemented yet.
             </p>
           </section>
         </div>
