@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "arctic-messages-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-24",
+  "d1_databases": [
+    {
+      "binding": "MESSAGES_DB",
+      "database_name": "arctic_messages_api",
+      "database_id": "29f4df4f-13ba-4e05-bf82-3be4160beb5b"
+    },
+    {
+      "binding": "AUTH_DB",
+      "database_name": "arctic-messenger",
+      "database_id": "e2b3f630-d9cd-459a-9047-383802c58498"
+    }
+  ]
+}
